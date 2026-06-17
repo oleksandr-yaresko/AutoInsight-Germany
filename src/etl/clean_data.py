@@ -123,6 +123,33 @@ df = df[
 ]
 
 # =====================================================
+# OPPORTUNITY SCORE
+# =====================================================
+
+price_max = df["price"].max()
+mileage_max = df["mileage"].max()
+age_max = df["vehicle_age"].max()
+
+df["opportunity_score"] = (
+    (1 - df["price"] / price_max) * 40 +
+    (1 - df["mileage"] / mileage_max) * 30 +
+    (1 - df["vehicle_age"] / age_max) * 30
+)
+
+df["opportunity_score"] = (
+    df["opportunity_score"]
+    .round()
+    .astype(int)
+)
+
+print("\nПроверка Opportunity Score:")
+print(
+    df[
+        ["brand", "model", "opportunity_score"]
+    ].head()
+)
+
+# =====================================================
 # 11. СОХРАНЯЕМ ОЧИЩЕННЫЕ ДАННЫЕ
 # =====================================================
 
@@ -132,29 +159,13 @@ df.to_csv(
     encoding="utf-8-sig"
 )
 
-# =====================================================
-# OPPORTUNITY SCORE
-# =====================================================
 
-price_max = df["price"].max()
-mileage_max = df["mileage"].max()
-age_max = df["vehicle_age"].max()
 
-df["opportunity_score"] = (
-
-    (1 - df["price"] / price_max) * 40 +
-
-    (1 - df["mileage"] / mileage_max) * 30 +
-
-    (1 - df["vehicle_age"] / age_max) * 30
-
-)
-
-df["opportunity_score"] = (
-    df["opportunity_score"]
-    .round(0)
-    .astype(int)
-)
+print(df[[
+    "brand",
+    "model",
+    "opportunity_score"
+]].head())
 
 print("Количество строк после очистки:", len(df))
 
