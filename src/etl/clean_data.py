@@ -6,6 +6,22 @@ import pandas as pd
 
 df = pd.read_csv("data/raw/car_listings.csv")
 
+print("Всего строк:", len(df))
+
+print(
+    "Пустых brand:",
+    df["brand"].isna().sum()
+)
+
+# Оставляем только автомобили
+
+df = df[df["brand"].notna()]
+
+print(
+    "После удаления не-авто:",
+    len(df)
+)
+
 print("Количество строк до очистки:", len(df))
 
 

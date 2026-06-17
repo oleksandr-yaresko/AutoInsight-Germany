@@ -2,39 +2,122 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from urllib.parse import urljoin
+import time
+
+# =====================================================
+# НАСТРОЙКИ
+# =====================================================
 
 BASE_URL = "https://www.kleinanzeigen.de"
-SEARCH_URL = "https://www.kleinanzeigen.de/s-autos/mainz/c216l5315r50"
 
-headers = {
-"User-Agent": "Mozilla/5.0"
+HEADERS = {
+    "User-Agent": "Mozilla/5.0"
 }
 
-response = requests.get(SEARCH_URL, headers=headers)
+# Сколько страниц собираем
+MAX_PAGES = 10
 
-print(f"Status code: {response.status_code}")
+all_links = []
 
-soup = BeautifulSoup(response.text, "html.parser")
+# =====================================================
+# ЦИКЛ ПО СТРАНИЦАМ
+# =====================================================
 
-links = []
+for page in range(1, MAX_PAGES + 1):
 
-for a in soup.find_all("a", href=True):
-    href = a["href"]
+    # Первая страница без параметра seite
+    if page == 1:
+        search_url = (
+            f"https://www.kleinanzeigen.de/s-autos/mainz/"
+            f"seite:{page}/c216l5315r50"
+        )
 
-    if "/s-anzeige/" in href:
-        full_url = urljoin(BASE_URL, href)
+    else:
+        search_url = (
+            f"https://www.kleinanzeigen.de/s-autos/mainz/"
+            f"seite:{page}/c216l5315r50"
+        )
 
-        if full_url not in links:
-            links.append(full_url)
+    print(f"\nСтраница {page}")
+    print(search_url)
 
-print(f"Found {len(links)} listings")
+    try:
 
-df = pd.DataFrame({"url": links})
+        response = requests.get(
+            search_url,
+            headers=HEADERS,
+            timeout=20
+        )
+
+        print("Status:", response.status_code)
+
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
+
+        page_links = []
+
+        for a in soup.find_all("a", href=True):
+
+            href = a["href"]
+
+                           
+
+            # Только объявления
+            if not href.startswith("/s-anzeige/"):
+                continue
+
+            full_url = urljoin(
+                BASE_URL,
+                href
+            )
+
+            if full_url not in page_links:
+                page_links.append(full_url)
+
+                full_url = urljoin(
+                    BASE_URL,
+                    href
+                )
+
+                if full_url not in page_links:
+                    page_links.append(full_url)
+
+        print(
+            f"Найдено объявлений: {len(page_links)}"
+        )
+
+        all_links.extend(page_links)
+
+        # Пауза между запросами
+        time.sleep(2)
+
+    except Exception as e:
+
+        print("Ошибка:", e)
+
+# =====================================================
+# УДАЛЯЕМ ДУБЛИКАТЫ
+# =====================================================
+
+all_links = list(set(all_links))
+
+print("\nИТОГО:")
+print("Уникальных объявлений:", len(all_links))
+
+# =====================================================
+# СОХРАНЯЕМ CSV
+# =====================================================
+
+df = pd.DataFrame({
+    "url": all_links
+})
 
 df.to_csv(
-"data/raw/listing_urls.csv",
-index=False,
-encoding="utf-8-sig"
+    "data/raw/listing_urls.csv",
+    index=False,
+    encoding="utf-8-sig"
 )
 
-print("Saved listing_urls.csv")
+print("\nФайл сохранён")

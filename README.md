@@ -17,3 +17,10 @@ This project analyzes German vehicle listings and generates market insights, fai
 - Power BI
 - Git
 - GitHub
+
+Challenge:
+Kleinanzeigen search pages contained unrelated advertisements.
+
+Solution:
+Implemented data quality filtering and category validation
+during the ETL process.

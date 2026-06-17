@@ -7,12 +7,21 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0"
 }
 
-df_urls = pd.read_csv("data/raw/listing_urls.csv")
+# ==========================================
+# ЧИТАЕМ СПИСОК URL
+# ==========================================
+
+df_urls = pd.read_csv(
+    "data/raw/listing_urls.csv"
+)
 
 urls = df_urls["url"].tolist()
 
 cars = []
 
+# ==========================================
+# ФУНКЦИЯ РАЗБОРА АТРИБУТОВ
+# ==========================================
 
 def parse_attributes(attr_string):
 
@@ -21,11 +30,19 @@ def parse_attributes(attr_string):
     for pair in attr_string.split("|"):
 
         if ":" in pair:
-            key, value = pair.split(":", 1)
+
+            key, value = pair.split(
+                ":",
+                1
+            )
+
             result[key] = value
 
     return result
 
+# ==========================================
+# ПАРСИНГ ОБЪЯВЛЕНИЙ
+# ==========================================
 
 for i, url in enumerate(urls, start=1):
 
@@ -56,6 +73,9 @@ for i, url in enumerate(urls, start=1):
             html
         )
 
+        # Если атрибутов нет —
+        # пропускаем объявление
+
         if not attr_match:
             continue
 
@@ -65,43 +85,71 @@ for i, url in enumerate(urls, start=1):
 
         car = {
 
-            "brand": attrs.get("marke_s"),
-            "model": attrs.get("model_s"),
+            "brand":
+                attrs.get("marke_s"),
 
-            "price": price_match.group(1)
-            if price_match else None,
+            "model":
+                attrs.get("model_s"),
 
-            "year": attrs.get("ez_i"),
-            "month": attrs.get("ezm_i"),
+            "price":
+                price_match.group(1)
+                if price_match
+                else None,
 
-            "mileage": attrs.get("km_i"),
+            "year":
+                attrs.get("ez_i"),
 
-            "fuel_type": attrs.get("fuel_s"),
+            "month":
+                attrs.get("ezm_i"),
 
-            "transmission": attrs.get("shift_s"),
+            "mileage":
+                attrs.get("km_i"),
 
-            "power_hp": attrs.get("power_i"),
+            "fuel_type":
+                attrs.get("fuel_s"),
 
-            "vehicle_type": attrs.get("typ_s"),
+            "transmission":
+                attrs.get("shift_s"),
 
-            "seller_type": seller_match.group(1)
-            if seller_match else None,
+            "power_hp":
+                attrs.get("power_i"),
 
-            "damage": attrs.get("schaden_s"),
+            "vehicle_type":
+                attrs.get("typ_s"),
 
-            "url": url,
+            "seller_type":
+                seller_match.group(1)
+                if seller_match
+                else None,
 
-            "scrape_date": datetime.now()
+            "damage":
+                attrs.get("schaden_s"),
+
+            "url":
+                url,
+
+            "scrape_date":
+                datetime.now()
         }
 
         cars.append(car)
 
     except Exception as e:
 
-        print("ERROR:", e)
+        print(
+            f"ERROR: {url}"
+        )
 
+        print(e)
+
+# ==========================================
+# СОХРАНЯЕМ CSV
+# ==========================================
 
 df = pd.DataFrame(cars)
+
+print()
+print("Cars in list:", len(cars))
 
 df.to_csv(
     "data/raw/car_listings.csv",
