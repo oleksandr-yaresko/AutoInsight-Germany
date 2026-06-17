@@ -15,7 +15,7 @@ HEADERS = {
 }
 
 # Сколько страниц собираем
-MAX_PAGES = 10
+MAX_PAGES = 50
 
 all_links = []
 
