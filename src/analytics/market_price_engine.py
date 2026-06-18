@@ -12,6 +12,12 @@ initial_cars = len(df)
 
 print("Cars loaded:", initial_cars)
 
+bad_models = ["andere"]
+
+df = df[
+    ~df["model"].isin(bad_models)
+]
+
 # ==================================
 # AGE GROUP
 # ==================================
@@ -332,4 +338,15 @@ print("Top Deals:", len(top_deals))
 print(
     "Average Score:",
     round(df["autoinsight_score"].mean(), 1)
+)
+print(
+    df["model"]
+    .value_counts()
+    .head(20)
+)
+
+print(
+    df[df["model"] == "andere"]
+    [["brand", "price", "year", "mileage"]]
+    .head(30)
 )
