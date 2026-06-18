@@ -135,32 +135,34 @@ df["classification"] = (
 )
 
 # ==================================
-# TOP DEALS
+# REASONS ENGINE
 # ==================================
 
-top_deals = (
-    df
-    .sort_values(
-        "autoinsight_score",
-        ascending=False
-    )
-    .head(20)
-)
+def build_reasons(row):
 
-print("\nTOP 20 HIDDEN DEALS\n")
+    reasons = []
 
-print(
-    top_deals[
-        [
-            "brand",
-            "model",
-            "price",
-            "market_price",
-            "discount_percent",
-            "autoinsight_score",
-            "classification"
-        ]
-    ]
+    if row["discount_percent"] >= 20:
+        reasons.append("20%+ below market value")
+
+    elif row["discount_percent"] >= 10:
+        reasons.append("Below market value")
+
+    if row["vehicle_age"] <= 5:
+        reasons.append("Modern vehicle")
+
+    if row["mileage"] <= 100000:
+        reasons.append("Low mileage")
+
+    if row["ads_count"] >= 10:
+        reasons.append("Popular model")
+
+    return " | ".join(reasons)
+
+
+df["reasons"] = df.apply(
+    build_reasons,
+    axis=1
 )
 
 # ==================================
@@ -177,7 +179,62 @@ print(
 )
 
 # ==================================
-# SAVE
+# FAIR PRICE
+# ==================================
+
+df["fair_price"] = (
+    df["market_price"]
+    .round(0)
+    .astype("Int64")
+)
+
+# ==================================
+# TOP DEALS
+# ==================================
+
+top_deals = df[
+    (df["price"] >= 3000)
+    & (df["vehicle_age"] <= 15)
+    & (df["mileage"] <= 250000)
+]
+
+top_deals = (
+    top_deals
+    .sort_values(
+        "autoinsight_score",
+        ascending=False
+    )
+    .head(20)
+)
+
+print("\nTOP 20 HIDDEN DEALS\n")
+
+for i, (_, row) in enumerate(
+    top_deals.iterrows(),
+    start=1
+):
+
+    print(
+        f"""
+#{i}
+
+{row['brand']} {row['model']}
+
+Price: €{row['price']:,.0f}
+Fair Price: €{row['fair_price']:,.0f}
+
+AutoInsight Score: {row['autoinsight_score']}
+
+Classification:
+{row['classification']}
+
+Reasons:
+{row['reasons']}
+"""
+    )
+
+# ==================================
+# SAVE FILES
 # ==================================
 
 df.to_csv(
@@ -186,5 +243,12 @@ df.to_csv(
     encoding="utf-8-sig"
 )
 
+top_deals.to_csv(
+    "data/processed/top_hidden_deals.csv",
+    index=False,
+    encoding="utf-8-sig"
+)
+
 print("\nSaved:")
 print("data/processed/car_deals.csv")
+print("data/processed/top_hidden_deals.csv")
