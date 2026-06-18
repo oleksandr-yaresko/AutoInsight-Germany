@@ -62,7 +62,7 @@ AutoInsight Germany analyzes used car listings from the German market and identi
 Project Statistics:
 
 • 1,196 vehicle listings collected
-• 599 vehicles successfully benchmarked
-• 119 market segments created
+• 533 vehicles successfully benchmarked
+• 112 market segments created
 • Top hidden deals automatically identified
 • Fair Price Engine based on model and vehicle age segmentation
