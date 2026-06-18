@@ -45,3 +45,24 @@ Tech stack:
 Fair Price based on make and model
 
 Fair Price based on make, model, age segment and mileage segment
+
+Fair Price Engine v2
+
+Market price estimation based on:
+
+- Vehicle brand
+- Vehicle model
+- Vehicle age segment
+
+Method:
+Median market price of comparable vehicles
+
+AutoInsight Germany analyzes used car listings from the German market and identifies undervalued vehicles using a proprietary AutoInsight Score.
+
+Project Statistics:
+
+• 1,196 vehicle listings collected
+• 599 vehicles successfully benchmarked
+• 119 market segments created
+• Top hidden deals automatically identified
+• Fair Price Engine based on model and vehicle age segmentation

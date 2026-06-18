@@ -8,7 +8,9 @@ df = pd.read_csv(
     "data/processed/car_listings_clean.csv"
 )
 
-print("Cars loaded:", len(df))
+initial_cars = len(df)
+
+print("Cars loaded:", initial_cars)
 
 # ==================================
 # AGE GROUP
@@ -29,24 +31,24 @@ df["age_group"] = pd.cut(
 # MILEAGE GROUP
 # ==================================
 
-df["mileage_group"] = pd.cut(
-    df["mileage"],
-    bins=[
-        0,
-        50000,
-        100000,
-        150000,
-        200000,
-        1000000
-    ],
-    labels=[
-        "0-50k",
-        "50-100k",
-        "100-150k",
-        "150-200k",
-        "200k+"
-    ]
-)
+#df["mileage_group"] = pd.cut(
+#   df["mileage"],
+#    bins=[
+#        0,
+#        50000,
+#        100000,
+#        150000,
+#        200000,
+#        1000000
+#    ],
+#    labels=[
+#        "0-50k",
+#        "50-100k",
+#        "100-150k",
+#        "150-200k",
+#        "200k+"
+#    ]
+#)
 
 # ==================================
 # MARKET PRICE
@@ -76,6 +78,11 @@ print(
     len(market_price)
 )
 
+market_price["liquidity_score"] = (
+    market_price["ads_count"]
+    / market_price["ads_count"].max()
+) * 15
+
 # ==================================
 # MERGE
 # ==================================
@@ -88,6 +95,11 @@ df = df.merge(
         "age_group"        
     ],
     how="left"
+)
+
+df["liquidity_score"] = (
+    df["liquidity_score"]
+    .fillna(0)
 )
 
 # ==================================
@@ -131,16 +143,12 @@ df["age_score"] = (
     20 * (1 - df["vehicle_age"] / max_age)
 ).clip(lower=0)
 
-df["popularity_score"] = (
-    df["ads_count"]
-    .clip(upper=15)
-)
 
 df["autoinsight_score"] = (
     df["discount_score"]
     + df["mileage_score"]
     + df["age_score"]
-    + df["popularity_score"]
+    + df["liquidity_score"]
 )
 
 df["autoinsight_score"] = (
@@ -290,6 +298,15 @@ Reasons:
 # SAVE FILES
 # ==================================
 
+df["savings_eur"] = (
+    df["fair_price"] - df["price"]
+)
+
+df["savings_percent"] = (
+    (df["fair_price"] - df["price"])
+    / df["fair_price"]
+) * 100
+
 df.to_csv(
     "data/processed/car_deals.csv",
     index=False,
@@ -302,19 +319,17 @@ top_deals.to_csv(
     encoding="utf-8-sig"
 )
 
-df["savings_eur"] = (
-    df["fair_price"]
-    - df["price"]
+
+
+print("\nSUMMARY")
+print("-" * 30)
+
+print("Initial Cars:", initial_cars)
+print("Cars With Fair Price:", len(df))
+print("Market Segments:", len(market_price))
+print("Top Deals:", len(top_deals))
+
+print(
+    "Average Score:",
+    round(df["autoinsight_score"].mean(), 1)
 )
-
-df["savings_percent"] = (
-    (
-        df["fair_price"]
-        - df["price"]
-    )
-    / df["fair_price"]
-) * 100
-
-print("\nSaved:")
-print("data/processed/car_deals.csv")
-print("data/processed/top_hidden_deals.csv")
