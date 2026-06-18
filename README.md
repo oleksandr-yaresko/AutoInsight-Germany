@@ -24,3 +24,24 @@ Kleinanzeigen search pages contained unrelated advertisements.
 Solution:
 Implemented data quality filtering and category validation
 during the ETL process.
+
+Dataset:
+- 1,277 scraped listings
+- 1,196 cleaned vehicle records
+
+Analytics:
+- Market price benchmarking
+- Opportunity Score
+- Undervalued vehicle detection
+- PostgreSQL analytical views
+
+Tech stack:
+- Python
+- Pandas
+- BeautifulSoup
+- PostgreSQL
+- SQL
+
+Fair Price based on make and model
+
+Fair Price based on make, model, age segment and mileage segment

@@ -11,12 +11,55 @@ df = pd.read_csv(
 print("Cars loaded:", len(df))
 
 # ==================================
+# AGE GROUP
+# ==================================
+
+df["age_group"] = pd.cut(
+    df["vehicle_age"],
+    bins=[0, 5, 10, 15, 100],
+    labels=[
+        "0-5",
+        "6-10",
+        "11-15",
+        "15+"
+    ]
+)
+
+# ==================================
+# MILEAGE GROUP
+# ==================================
+
+df["mileage_group"] = pd.cut(
+    df["mileage"],
+    bins=[
+        0,
+        50000,
+        100000,
+        150000,
+        200000,
+        1000000
+    ],
+    labels=[
+        "0-50k",
+        "50-100k",
+        "100-150k",
+        "150-200k",
+        "200k+"
+    ]
+)
+
+# ==================================
 # MARKET PRICE
 # ==================================
 
 market_price = (
     df.groupby(
-        ["brand", "model"]
+        [
+            "brand",
+            "model",
+            "age_group",
+            "mileage_group"
+        ]
     )
     .agg(
         ads_count=("price", "count"),
@@ -25,14 +68,12 @@ market_price = (
     .reset_index()
 )
 
-# Оставляем модели с минимум 5 объявлениями
-
 market_price = market_price[
-    market_price["ads_count"] >= 5
+    market_price["ads_count"] >= 3
 ]
 
 print(
-    "Market models:",
+    "Market segments:",
     len(market_price)
 )
 
@@ -42,7 +83,12 @@ print(
 
 df = df.merge(
     market_price,
-    on=["brand", "model"],
+    on=[
+        "brand",
+        "model",
+        "age_group",
+        "mileage_group"
+    ],
     how="left"
 )
 
