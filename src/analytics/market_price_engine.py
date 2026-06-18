@@ -57,8 +57,7 @@ market_price = (
         [
             "brand",
             "model",
-            "age_group",
-            "mileage_group"
+            "age_group"            
         ]
     )
     .agg(
@@ -86,8 +85,7 @@ df = df.merge(
     on=[
         "brand",
         "model",
-        "age_group",
-        "mileage_group"
+        "age_group"        
     ],
     how="left"
 )
