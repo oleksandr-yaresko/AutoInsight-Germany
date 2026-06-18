@@ -204,7 +204,16 @@ top_deals = (
         "autoinsight_score",
         ascending=False
     )
+    .drop_duplicates(
+        subset=["brand", "model"]
+    )
     .head(20)
+)
+
+top_deals.insert(
+    0,
+    "rank",
+    range(1, len(top_deals) + 1)
 )
 
 print("\nTOP 20 HIDDEN DEALS\n")
