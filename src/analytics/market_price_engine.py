@@ -258,6 +258,19 @@ top_deals.to_csv(
     encoding="utf-8-sig"
 )
 
+df["savings_eur"] = (
+    df["fair_price"]
+    - df["price"]
+)
+
+df["savings_percent"] = (
+    (
+        df["fair_price"]
+        - df["price"]
+    )
+    / df["fair_price"]
+) * 100
+
 print("\nSaved:")
 print("data/processed/car_deals.csv")
 print("data/processed/top_hidden_deals.csv")
