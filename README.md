@@ -66,3 +66,16 @@ Project Statistics:
 • 112 market segments created
 • Top hidden deals automatically identified
 • Fair Price Engine based on model and vehicle age segmentation
+
+
+## Dashboard Overview
+
+![Overview](images/dashboard_overview.png)
+
+## Top Hidden Deals
+
+![Deals](images/top_hidden_deals.png)
+
+## Market Intelligence
+
+![Market](images/market_intelligence.png)
